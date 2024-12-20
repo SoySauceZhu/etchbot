@@ -2,14 +2,14 @@
 
 ## Software:
 
-### AI modified picture: Cartoonify
+### 1. AI modified picture: Cartoonify
 https://openaccess.thecvf.com/content_cvpr_2018/papers/Chen_CartoonGAN_Generative_Adversarial_CVPR_2018_paper.pdf
 
 https://github.com/ahmedbesbes/cartoonify
 
 https://github.com/FilipAndersson245/cartoon-gan
 
-### Image processing:
+### 2. Image processing:
 1. edge detection -> label the edge clusters -> ignore minor cluster -> link the clusters -> binary image
 
    - edge detection: cv2.canny
@@ -19,17 +19,17 @@ https://github.com/FilipAndersson245/cartoon-gan
 
 2. edge detection -> label the edge clusters -> discretize (g-code or scatter plot) -> re-connect the plot (traveling salesman) -> binary image
 
-### bitmap to svg
+### 3. bitmap to svg
 https://pypi.org/project/pypotrace/
 https://potrace.sourceforge.net/
 
-### svg to Gcode
+### 4. svg to Gcode
 https://github.com/sameer/svg2gcode
 
-### alternative: svg to driver config file
+### 4. alternative: svg to driver config file
 ~~I don't like this~~
 
-### Gcode Motor Driver
+### 5. Gcode Motor Driver
 
 
 ## Hardware:
