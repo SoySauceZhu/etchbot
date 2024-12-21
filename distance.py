@@ -1,6 +1,9 @@
 import numpy as np
 
 def find_min_distance(points1, points2):
+    """
+    takes in two array of indices (positions)
+    """
     points1 = np.array(points1)
     points2 = np.array(points2)
 
@@ -16,45 +19,45 @@ def find_min_distance(points1, points2):
 import numpy as np
 
 def draw_line(binary_picture_array, start, end):
-    """
-    Draw a line between two points in a binary image array.
-    
-    Parameters:
-    - binary_picture_array: 2D numpy array representing the binary image.
-    - start: Tuple (x1, y1) representing the starting point.
-    - end: Tuple (x2, y2) representing the ending point.
-    
-    Returns:
-    - Updated binary_picture_array with the line drawn.
-    """
-    x1, y1 = start
-    x2, y2 = end
-
-    # Calculate differences
-    dx = abs(x2 - x1)
-    dy = abs(y2 - y1)
-    sx = 1 if x1 < x2 else -1
-    sy = 1 if y1 < y2 else -1
-    err = dx - dy
-
-    while True:
-        # Set the pixel in the binary image
-        binary_picture_array[x1, y1] = 1  # Assuming 1 is the line and 0 is the background
+        """
+        Draw a line between two points in a binary image array.
         
-        # Check if we reached the end point
-        if x1 == x2 and y1 == y2:
-            break
+        Parameters:
+        - binary_picture_array: 2D numpy array representing the binary image.
+        - start: Tuple (x1, y1) representing the starting point.
+        - end: Tuple (x2, y2) representing the ending point.
+        
+        Returns:
+        - Updated binary_picture_array with the line drawn.
+        """
+        x1, y1 = start
+        x2, y2 = end
 
-        # Calculate the error
-        err2 = err * 2
-        if err2 > -dy:
-            err -= dy
-            x1 += sx
-        if err2 < dx:
-            err += dx
-            y1 += sy
+        # Calculate differences
+        dx = abs(x2 - x1)
+        dy = abs(y2 - y1)
+        sx = 1 if x1 < x2 else -1
+        sy = 1 if y1 < y2 else -1
+        err = dx - dy
 
-    return binary_picture_array
+        while True:
+            # Set the pixel in the binary image
+            binary_picture_array[x1, y1] = 1  # Assuming 1 is the line and 0 is the background
+            
+            # Check if we reached the end point
+            if x1 == x2 and y1 == y2:
+                break
+
+            # Calculate the error
+            err2 = err * 2
+            if err2 > -dy:
+                err -= dy
+                x1 += sx
+            if err2 < dx:
+                err += dx
+                y1 += sy
+
+        return binary_picture_array
 
 
 
