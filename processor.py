@@ -1,4 +1,3 @@
-import test
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -41,18 +40,19 @@ class Processor:
 
         return min_distance, points1[min_index[0]], points2[min_index[1]]
 
-    def draw_line(binary_picture_array, start, end, replace=-1):
+    def draw_line(input_array, start, end, replace=-1):
         """
         Draw a line between two points in a binary image array.
-        
+
         Parameters:
         - binary_picture_array: 2D numpy array representing the binary image.
         - start: Tuple (x1, y1) representing the starting point.
         - end: Tuple (x2, y2) representing the ending point.
-        
+
         Returns:
         - Updated binary_picture_array with the line drawn.
         """
+        binary_picture_array = input_array.copy()
         x1, y1 = start
         x2, y2 = end
 
@@ -65,8 +65,9 @@ class Processor:
 
         while True:
             # Set the pixel in the binary image
-            binary_picture_array[x1, y1] = replace  # Assuming 1 is the line and 0 is the background
-            
+            # Assuming 1 is the line and 0 is the background
+            binary_picture_array[x1, y1] = replace
+
             # Check if we reached the end point
             if x1 == x2 and y1 == y2:
                 break
@@ -81,9 +82,6 @@ class Processor:
                 y1 += sy
 
         return binary_picture_array
-
-
-
 
     def process(image):
         image = Processor.label_cluster(image)
@@ -121,7 +119,7 @@ class Processor:
         arr = labeled_array.copy()
         num_features = arr.max()
 
-        # arr == i evaluated to 1 
+        # arr == i evaluated to 1
         cluster_sizes = np.array([np.sum(arr == i)
                                  for i in range(1, num_features + 1)])
 
@@ -134,7 +132,7 @@ class Processor:
 
         return arr
 
-    def shortest_distance_dilation(labeled_array, cluster_id):
+    def shortest_distance_dilation(labeled_array, cluster_id, exemption=[]):
         """
         Find the shortest distance between a target cluster and the rest of the clusters using dilation.
 
@@ -151,8 +149,13 @@ class Processor:
         # Create a binary mask for the target cluster
         target_mask = (labeled_array == cluster_id)
 
+        exemption_array = labeled_array.copy()
+
+        for i in exemption:
+            exemption_array[exemption_array == i] = 0
+
         # Create a binary mask for all other clusters
-        other_clusters_mask = (labeled_array != 0) & ~target_mask
+        other_clusters_mask = (exemption_array != 0) & ~target_mask
 
         # Extract the shape of the array
         array_shape = labeled_array.shape
@@ -191,7 +194,8 @@ class Processor:
                 #             start_point = tuple(t_point)
                 #             end_point = tuple(o_point)
 
-                min_distance, start_point, end_point = Processor.find_min_distance(target_boundary, overlap_points)
+                min_distance, start_point, end_point = Processor.find_min_distance(
+                    target_boundary, overlap_points)
 
                 return int(min_distance), start_point, end_point, labeled_array[*end_point]
 
@@ -206,29 +210,28 @@ class Processor:
         return None, None, None, None
 
     def link_clusters(labeled_array):
-        # TODO
-        pass
+        cluster_ids = np.unique(labeled_array)
+        cluster_ids = cluster_ids[cluster_ids > 0]
+        cluster_ids = list(cluster_ids)
 
-    def test_shortest_distance_dilation():
-        array_zeros = np.zeros((10, 10))
-        cluster1 = np.array([(0,0), (0,1), (1,0), (1,1)])
-        cluster2 = np.array([(9,0), (9,1), (8,0), (8,1), (7,1)])
-        cluster3 = np.array([(9,9), (9,8), (8,9), (8,8)])
-        cluster4 = np.array([(0,9), (0,8), (1,9), (1,8)])
-        for i in cluster1:
-            array_zeros[*i] = 1
-        for i in cluster2:
-            array_zeros[*i] = 2
-        for i in cluster3:
-            array_zeros[*i] = 3
-        for i in cluster4:
-            array_zeros[*i] = 4
+        linked_array = labeled_array.copy()
 
-        print(array_zeros)
-        d, start, end, endId = Processor.shortest_distance_dilation(array_zeros, 1)
-        print("\n")
-        print(f"{d},{start},{end},{endId}")
+        visited = []
 
+        id = cluster_ids[0]
+        visited.append(id)
+        while set(visited) != set(cluster_ids):
+
+            # Find next cluster
+            _, start, end, id = Processor.shortest_distance_dilation(
+                labeled_array, id, visited)
+
+            # Link the next cluster
+            linked_array = Processor.draw_line(linked_array, start, end)
+            visited.append(id)
+
+        linked_array[linked_array != 0] = 1
+        return linked_array
 
     def link_clusters_with_shortest_path(labeled_array):
         """
@@ -286,6 +289,7 @@ class Processor:
 
 
 
+
 def main():
     input_folder = "edges"
     output_folder = "processed"
@@ -310,5 +314,4 @@ if __name__ == "__main__":
     # out2 = Processor.output_image(linked)
 
     # test.show_images_in_row(out1, out2)
-
-    Processor.test_shortest_distance_dilation()
+    pass

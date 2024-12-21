@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
+from processor import Processor
+
 def show_images_in_row(image1, image2):
     # Convert images from BGR (OpenCV format) to RGB (Matplotlib format)
     image1_rgb = cv2.cvtColor(image1, cv2.COLOR_BGR2RGB)
@@ -48,6 +50,49 @@ def di(path):
         cv2.waitKey(0)
 
 
+def test_linked_array():
+    array_zeros = np.zeros((10, 10))
+    cluster1 = np.array([(0, 0), (0, 1), (1, 0), (1, 1)])
+    cluster2 = np.array([(9, 0), (9, 1), (8, 0), (8, 1), (7, 1)])
+    cluster3 = np.array([(9, 9), (9, 8), (8, 9), (8, 8)])
+    cluster4 = np.array([(0, 9), (0, 8), (1, 9), (1, 8)])
+    for i in cluster1:
+        array_zeros[*i] = 1
+    for i in cluster2:
+        array_zeros[*i] = 2
+    for i in cluster3:
+        array_zeros[*i] = 3
+    for i in cluster4:
+        array_zeros[*i] = 4
+
+    out = Processor.link_clusters(array_zeros)
+    print("---------")
+    print(out)
+
+
+def test_shortest_distance_dilation():
+    array_zeros = np.zeros((10, 10))
+    cluster1 = np.array([(0, 0), (0, 1), (1, 0), (1, 1)])
+    cluster2 = np.array([(9, 0), (9, 1), (8, 0), (8, 1), (7, 1)])
+    cluster3 = np.array([(9, 9), (9, 8), (8, 9), (8, 8)])
+    cluster4 = np.array([(0, 9), (0, 8), (1, 9), (1, 8)])
+    for i in cluster1:
+        array_zeros[*i] = 1
+    for i in cluster2:
+        array_zeros[*i] = 2
+    for i in cluster3:
+        array_zeros[*i] = 3
+    for i in cluster4:
+        array_zeros[*i] = 4
+
+    print(array_zeros)
+    d, start, end, endId = Processor.shortest_distance_dilation(array_zeros, 2, [1,3])
+    print("\n")
+    print(f"{d},{start},{end},{endId}")
+
+
 
 if __name__ == "__main__":
-    di("frames/output_0150.png")
+    # di("frames/output_0150.png")
+    # test_shortest_distance_dilation()
+    test_linked_array()
