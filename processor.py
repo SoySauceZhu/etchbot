@@ -80,7 +80,7 @@ class Processor:
     def process(image):
         image = Processor.label_cluster(image)
         image = Processor.ignore_cluster(image)
-        image = Processor.link_clusters(image)
+        # image = Processor.link_clusters(image)
         image = Processor.output_image(image)
         return image
 
@@ -140,6 +140,9 @@ class Processor:
             end_point (tuple): The closest point on the nearest cluster boundary.
             end_cluster_id (int)
         """
+
+        # TODO: Change to BFS
+
         # Create a binary mask for the target cluster
         target_mask = (labeled_array == cluster_id)
 
@@ -212,6 +215,9 @@ class Processor:
 
         visited = []
 
+        if not cluster_ids:
+            return labeled_array
+
         id = cluster_ids[0]
         visited.append(id)
         while set(visited) != set(cluster_ids):
@@ -231,7 +237,8 @@ class Processor:
 def main():
     input_folder = "edges"
     output_folder = "processed"
-    for filename in tqdm(sorted(os.listdir(input_folder))):
+    os.makedirs(output_folder, exist_ok=True)
+    for filename in tqdm(sorted(os.listdir(input_folder))[:1000]):
         if filename.endswith(".png"):
             img_path = os.path.join(input_folder, filename)
 

@@ -60,12 +60,12 @@ def assemble_frames_to_video(input_dir, output_video, fps=30):
 
 # Example usage
 if __name__ == "__main__":
-    input_video = "resources/bad_apple.mp4"  # Path to your MP4 file
-    output_dir = "frames"     # Directory to save the frames
+    # input_video = "resources/bad_apple.mp4"  # Path to your MP4 file
+    # output_dir = "frames"     # Directory to save the frames
     
-    extract_frames(input_video, output_dir)
+    # extract_frames(input_video, output_dir)
 
-    input_dir = "frames"           # Directory containing the frames
+    input_dir = "processed"           # Directory containing the frames
     output_video = "output.mp4"    # Output video file
     fps = 30                       # Frames per second for the video
     
