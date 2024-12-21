@@ -1,15 +1,9 @@
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.ndimage import label, generate_binary_structure, binary_dilation
-from scipy.spatial.distance import cdist
+from scipy.ndimage import label, binary_dilation
 import os
 from tqdm import tqdm
-import pandas as pd
-from scipy.ndimage import label, center_of_mass
-from scipy.spatial import distance
-from skimage.graph import route_through_array
-import distance
+from scipy.ndimage import label
 
 
 class Processor:
@@ -86,7 +80,7 @@ class Processor:
     def process(image):
         image = Processor.label_cluster(image)
         image = Processor.ignore_cluster(image)
-        image = Processor.link_clusters_with_shortest_path(image)
+        image = Processor.link_clusters(image)
         image = Processor.output_image(image)
         return image
 
@@ -233,62 +227,6 @@ class Processor:
         linked_array[linked_array != 0] = 1
         return linked_array
 
-    def link_clusters_with_shortest_path(labeled_array):
-        """
-        Links clusters in a labeled array with the shortest path.
-
-        Parameters:
-            labeled_array (numpy.ndarray): 2D array where clusters are labeled with integers.
-
-        Returns:
-            numpy.ndarray: Array where clusters are linked with paths.
-        """
-        # Ensure the labeled_array is valid
-        if not isinstance(labeled_array, np.ndarray):
-            raise ValueError("Input must be a numpy array.")
-
-        # Identify unique clusters (excluding background)
-        cluster_ids = np.unique(labeled_array)
-        # Exclude background (label 0)
-        cluster_ids = cluster_ids[cluster_ids > 0]
-
-        # Create a new array to hold the result
-        result_array = np.copy(labeled_array)
-
-        # Generate a cost array where traversing labeled clusters is expensive
-        cost_array = np.ones_like(labeled_array, dtype=float)
-
-        # Link all clusters
-        for i in range(0, len(cluster_ids), 2):
-            j = i+1
-            if j == len(cluster_ids):
-                break
-
-            cluster_a = cluster_ids[i]
-            cluster_b = cluster_ids[j]
-
-            # Find the border pixels of each cluster
-            structure = generate_binary_structure(2, 2)
-            border_a = binary_dilation(
-                labeled_array == cluster_a, structure) & (labeled_array == 0)
-            border_b = binary_dilation(
-                labeled_array == cluster_b, structure) & (labeled_array == 0)
-
-            # test.show_images_in_row(Processor.output_image(border_a), Processor.output_image(border_b))
-
-            # Get coordinates of border pixels
-            coords_a = np.argwhere(border_a)
-            coords_b = np.argwhere(border_b)
-
-            _, point_a, point_b = distance.find_min_distance(
-                coords_a, coords_b)
-            result_array = distance.draw_line(
-                result_array, point_a, point_b)   # update result_array
-
-        return result_array
-
-
-
 
 def main():
     input_folder = "edges"
@@ -305,7 +243,7 @@ def main():
 
 
 if __name__ == "__main__":
-    # main()
+    main()
     # img = cv2.imread("edges/frame_0665.png")
     # label = Processor.label_cluster(img)
     # ignore = Processor.ignore_cluster(label)
@@ -314,4 +252,3 @@ if __name__ == "__main__":
     # out2 = Processor.output_image(linked)
 
     # test.show_images_in_row(out1, out2)
-    pass
