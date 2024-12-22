@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-from processor import Processor
+from new_processor import Processor
 
 def show_images_in_row(image1, image2):
     # Convert images from BGR (OpenCV format) to RGB (Matplotlib format)
@@ -86,9 +86,9 @@ def test_shortest_distance_dilation():
         array_zeros[*i] = 4
 
     print(array_zeros)
-    d, start, end, endId = Processor.shortest_distance_dilation(array_zeros, 2, [1,3])
+    start, end = Processor.shortest_distance_dilation(array_zeros, 2)
     print("\n")
-    print(f"{d},{start},{end},{endId}")
+    print(f"{start},{end}")
 
 
 

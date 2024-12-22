@@ -4,6 +4,7 @@ from scipy.ndimage import label, binary_dilation
 import os
 from tqdm import tqdm
 from scipy.ndimage import label
+from new_processor import Processor as new
 
 
 class Processor:
@@ -243,7 +244,7 @@ def main():
             img_path = os.path.join(input_folder, filename)
 
             image = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-            out = Processor.process(image)
+            out = new.process(image)
 
             output_path = os.path.join(output_folder, filename)
             cv2.imwrite(output_path, out)
