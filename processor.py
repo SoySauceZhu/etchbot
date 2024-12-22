@@ -1,23 +1,11 @@
 import cv2
 import numpy as np
 from scipy.ndimage import label, binary_dilation
-import os
-from tqdm import tqdm
-from scipy.ndimage import label
-from new_processor import Processor as new
 
 
 class Processor:
     def __init__(self):
         pass
-
-    def output_image(cluster):
-        """
-        Takes in a 2D array, convert to binary image (0,0,0) or (255,255,255)
-        """
-        out = np.zeros((*cluster.shape, 3), dtype=np.uint8)
-        out[cluster > 0] = [255, 255, 255]
-        return out
 
     def find_min_distance(points1, points2):
         """
@@ -33,9 +21,12 @@ class Processor:
         min_index = np.unravel_index(np.argmin(distances), distances.shape)
         min_distance = distances[min_index]
 
-        return min_distance, points1[min_index[0]], points2[min_index[1]]
+        start = [int(item) for item in points1[min_index[0]]]
+        end = [int(item) for item in points2[min_index[1]]]
 
-    def draw_line(input_array, start, end, replace=-1):
+        return min_distance, start, end
+
+    def draw_line(input_array, start, end, replace=1):
         """
         Draw a line between two points in a binary image array.
 
@@ -47,7 +38,7 @@ class Processor:
         Returns:
         - Updated binary_picture_array with the line drawn.
         """
-        binary_picture_array = input_array.copy()
+        input_array = np.array(input_array)
         x1, y1 = start
         x2, y2 = end
 
@@ -61,7 +52,7 @@ class Processor:
         while True:
             # Set the pixel in the binary image
             # Assuming 1 is the line and 0 is the background
-            binary_picture_array[x1, y1] = replace
+            input_array[x1, y1] = replace
 
             # Check if we reached the end point
             if x1 == x2 and y1 == y2:
@@ -76,14 +67,7 @@ class Processor:
                 err += dx
                 y1 += sy
 
-        return binary_picture_array
-
-    def process(image):
-        image = Processor.label_cluster(image)
-        image = Processor.ignore_cluster(image)
-        # image = Processor.link_clusters(image)
-        image = Processor.output_image(image)
-        return image
+        return input_array
 
     def label_cluster(image):
         """
@@ -127,136 +111,77 @@ class Processor:
 
         return arr
 
-    def shortest_distance_dilation(labeled_array, cluster_id, exemption=[]):
-        """
-        Find the shortest distance between a target cluster and the rest of the clusters using dilation.
+    def shortest_distance_dilation(labeled_array, start_cluster_id):
+        start_mask = (labeled_array == start_cluster_id)
 
-        Parameters:
-            labeled_array (ndarray): 2D array with labeled clusters (output of ndimage.label).
-            cluster_id (int): The ID of the target cluster.
+        other_cluster_mask = (labeled_array != 0) & ~start_mask
 
-        Returns:
-            min_distance (int): The shortest distance between the target cluster and the others.
-            start_point (tuple): The starting point on the target cluster boundary.
-            end_point (tuple): The closest point on the nearest cluster boundary.
-            end_cluster_id (int)
-        """
-
-        # TODO: Change to BFS
-
-        # Create a binary mask for the target cluster
-        target_mask = (labeled_array == cluster_id)
-
-        exemption_array = labeled_array.copy()
-
-        for i in exemption:
-            exemption_array[exemption_array == i] = 0
-
-        # Create a binary mask for all other clusters
-        other_clusters_mask = (exemption_array != 0) & ~target_mask
-
-        # Extract the shape of the array
         array_shape = labeled_array.shape
 
-        # Initialize variables
-        dilated_mask = target_mask.copy()
+        dilate_mask = start_mask.copy()
         visited = np.zeros(array_shape, dtype=bool)
         distance = 0
 
-        # Track the points for the shortest distance
-        start_point = None
-        end_point = None
+        start_p = None
+        end_p = None
 
-        # Perform iterative dilation
         while True:
             distance += 1
 
-            # Dilate the current mask
-            dilated_mask = binary_dilation(dilated_mask)
+            # Default dilate structure
+            dilate_mask = binary_dilation(dilate_mask)
 
-            # Check for overlap with other clusters
-            overlap = dilated_mask & other_clusters_mask
+            overlap = dilate_mask & other_cluster_mask
             if np.any(overlap):
-                # Find the boundary points for the target cluster and overlapping clusters
-                # TODO: OR or OXR?
-                target_boundary = np.argwhere(dilated_mask & target_mask)
-                overlap_points = np.argwhere(overlap)
+                # start_points = np.argwhere(dilate_mask & start_mask)
+                start_points = np.argwhere(start_mask)
+                end_points = np.argwhere(overlap)
 
-                # Compute the Euclidean distances and find the minimum
-                # min_distance = np.inf
-                # for t_point in target_boundary:
-                #     for o_point in overlap_points:
-                #         dist = np.linalg.norm(t_point - o_point)
-                #         if dist < min_distance:
-                #             min_distance = dist
-                #             start_point = tuple(t_point)
-                #             end_point = tuple(o_point)
+                _, start_p, end_p = Processor.find_min_distance(
+                    start_points, end_points)
 
-                min_distance, start_point, end_point = Processor.find_min_distance(
-                    target_boundary, overlap_points)
+                return start_p, end_p
 
-                return int(min_distance), start_point, end_point, labeled_array[*end_point]
+            visited |= dilate_mask
 
-            # Update the visited array
-            visited |= dilated_mask
-
-            # Stop if the entire array has been visited
             if np.all(visited):
                 break
 
-        # If no other clusters are found, return None
-        return None, None, None, None
+        return None, None
 
     def link_clusters(labeled_array):
-        cluster_ids = np.unique(labeled_array)
-        cluster_ids = cluster_ids[cluster_ids > 0]
-        cluster_ids = list(cluster_ids)
+        linked = np.array([[1 if item != 0 else 0 for item in row]
+                  for row in labeled_array])
 
-        linked_array = labeled_array.copy()
+        cluster_ids = np.sort(np.unique(labeled_array))
 
-        visited = []
+        if len(cluster_ids) <= 2:   # Only 0, 1 the labeled array
+            return linked
 
-        if not cluster_ids:
-            return labeled_array
+        while len(cluster_ids) > 2:
+            start_cluster_id = cluster_ids[1]
+            start, end = Processor.shortest_distance_dilation(
+                labeled_array, start_cluster_id)
 
-        id = cluster_ids[0]
-        visited.append(id)
-        while set(visited) != set(cluster_ids):
+            linked = Processor.draw_line(linked, start, end)
 
-            # Find next cluster
-            _, start, end, id = Processor.shortest_distance_dilation(
-                labeled_array, id, visited)
+            labeled_array = Processor.label_cluster(linked)
+            cluster_ids = np.sort(np.unique(labeled_array))
 
-            # Link the next cluster
-            linked_array = Processor.draw_line(linked_array, start, end)
-            visited.append(id)
+        return linked
 
-        linked_array[linked_array != 0] = 1
-        return linked_array
+    def output_image(cluster):
+        """
+        Takes in a 2D array, convert to binary image (0,0,0) or (255,255,255)
+        """
+        out = np.zeros((*cluster.shape, 3), dtype=np.uint8)
+        out[cluster > 0] = [255, 255, 255]
+        return out
 
+    def process(image):
+        image = Processor.label_cluster(image)
+        image = Processor.ignore_cluster(image)
+        image = Processor.link_clusters(image)
+        image = Processor.output_image(image)
+        return image
 
-def main():
-    input_folder = "edges"
-    output_folder = "processed"
-    os.makedirs(output_folder, exist_ok=True)
-    for filename in tqdm(sorted(os.listdir(input_folder))[:1000]):
-        if filename.endswith(".png"):
-            img_path = os.path.join(input_folder, filename)
-
-            image = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-            out = new.process(image)
-
-            output_path = os.path.join(output_folder, filename)
-            cv2.imwrite(output_path, out)
-
-
-if __name__ == "__main__":
-    main()
-    # img = cv2.imread("edges/frame_0665.png")
-    # label = Processor.label_cluster(img)
-    # ignore = Processor.ignore_cluster(label)
-    # linked = Processor.link_clusters_with_shortest_path(ignore)
-    # out1 = Processor.output_image(ignore)
-    # out2 = Processor.output_image(linked)
-
-    # test.show_images_in_row(out1, out2)

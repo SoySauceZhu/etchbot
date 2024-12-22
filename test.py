@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-from new_processor import Processor
+from processor import Processor
 
 def show_images_in_row(image1, image2):
     # Convert images from BGR (OpenCV format) to RGB (Matplotlib format)
