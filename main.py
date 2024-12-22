@@ -25,6 +25,8 @@ def image2svg(indir, outdir, filename):
 
 
 def svg2gcode(indir, outdir, filename):
+    os.makedirs(indir, exist_ok=True)
+    os.makedirs(outdir, exist_ok=True)
     pass
 
 
