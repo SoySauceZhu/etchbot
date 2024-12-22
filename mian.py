@@ -1,15 +1,33 @@
 import cv2
+import os
+import subprocess
 from processor import Processor
 
-konan = cv2.imread("resources/konan.jpg")
-konan = Processor.resize(konan, 480)
-edges = cv2.Canny(konan, 50, 150)
-# edges = Processor.resize(edges, 480)
 
-processed = Processor.process(edges)
+def image2svg(indir, outdir, filename):
+    os.makedirs(indir, exist_ok=True)
+    os.makedirs(outdir, exist_ok=True)
 
-cv2.imshow("123", processed)
-cv2.waitKey(0)
+    input_path = os.path.join(indir, filename)
+    output_path = os.path.join(outdir, "processed_"+filename)
+    pnm_path = os.path.splitext(output_path)[0] + ".pnm"
+    svg_path = os.path.splitext(output_path)[0] + ".svg"
 
-cv2.imwrite("processed/konan.jpg", processed)
+    konan = cv2.imread(input_path)
+    konan = Processor.resize(konan, 480)
+    edges = cv2.Canny(konan, 50, 150)
 
+    processed = Processor.process(edges)
+
+    cv2.imwrite(output_path, processed)
+
+    subprocess.run(["convert", output_path, pnm_path])
+    subprocess.run(["potrace", pnm_path, "-s", "-o", svg_path])
+
+
+if __name__ == "__main__":
+    indir = "resources"
+    filename = "konan.jpg"
+    outdir = "processed"
+
+    image2svg(indir, outdir, filename)

@@ -1,4 +1,12 @@
 *.mp4
 *.png
+*.png
 
+!resources/*
+
+edges/
+frames/
+processed/
+resources/
+output/
 __pycache__/
