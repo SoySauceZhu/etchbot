@@ -5,6 +5,7 @@ from scipy.ndimage import label, binary_dilation
 
 class Processor:
     struct = np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]])
+
     def __init__(self):
         pass
 
@@ -61,45 +62,36 @@ class Processor:
         return min_distance, start, end
 
     def draw_line(input_array, start, end, replace=1):
-        """
-        Draw a line between two points in a binary image array.
-
-        Parameters:
-        - binary_picture_array: 2D numpy array representing the binary image.
-        - start: Tuple (x1, y1) representing the starting point.
-        - end: Tuple (x2, y2) representing the ending point.
-
-        Returns:
-        - Updated binary_picture_array with the line drawn.
-        """
         input_array = np.array(input_array)
-        x1, y1 = start
-        x2, y2 = end
+        x0, y0 = start
+        x1, y1 = end
+        dx = abs(x1 - x0)    # distance to travel in X
+        dy = abs(y1 - y0)    # distance to travel in Y
 
-        # Calculate differences
-        dx = abs(x2 - x1)
-        dy = abs(y2 - y1)
-        sx = 1 if x1 < x2 else -1
-        sy = 1 if y1 < y2 else -1
-        err = dx - dy
+        if x0 < x1:
+            ix = 1           # x will increase at each step
+        else:
+            ix = -1          # x will decrease at each step
 
-        while True:
-            # Set the pixel in the binary image
-            # Assuming 1 is the line and 0 is the background
-            input_array[x1, y1] = replace
+        if y0 < y1:
+            iy = 1           # y will increase at each step
+        else:
+            iy = -1          # y will decrease at each step
 
-            # Check if we reached the end point
-            if x1 == x2 and y1 == y2:
-                break
+        e = 0                # Current error
 
-            # Calculate the error
-            err2 = err * 2
-            if err2 > -dy:
-                err -= dy
-                x1 += sx
-            if err2 < dx:
-                err += dx
-                y1 += sy
+        for i in range(dx + dy):
+            input_array[x0, y0] = replace
+            e1 = e + dy
+            e2 = e - dx
+            if abs(e1) < abs(e2):
+                # Error will be smaller moving on X
+                x0 += ix
+                e = e1
+            else:
+                # Error will be smaller moving on Y
+                y0 += iy
+                e = e2
 
         return input_array
 
@@ -158,7 +150,8 @@ class Processor:
             distance += 1
 
             # Default dilate structure
-            dilate_mask = binary_dilation(dilate_mask, structure=Processor.struct)
+            dilate_mask = binary_dilation(
+                dilate_mask, structure=Processor.struct)
 
             overlap = dilate_mask & other_cluster_mask
             if np.any(overlap):
