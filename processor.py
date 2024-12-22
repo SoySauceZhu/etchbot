@@ -4,6 +4,7 @@ from scipy.ndimage import label, binary_dilation
 
 
 class Processor:
+    struct = np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]])
     def __init__(self):
         pass
 
@@ -115,12 +116,7 @@ class Processor:
         # Convert array either 1 or 0
         binary_image = (image != 0).astype(int)
 
-        # 4-connectivity structure
-        structure = np.array([[1, 1, 1],
-                              [1, 1, 1],
-                              [1, 1, 1]])
-
-        labeled_array, _ = label(binary_image, structure=structure)
+        labeled_array, _ = label(binary_image, structure=Processor.struct)
 
         return labeled_array
 
@@ -162,7 +158,7 @@ class Processor:
             distance += 1
 
             # Default dilate structure
-            dilate_mask = binary_dilation(dilate_mask)
+            dilate_mask = binary_dilation(dilate_mask, structure=Processor.struct)
 
             overlap = dilate_mask & other_cluster_mask
             if np.any(overlap):
