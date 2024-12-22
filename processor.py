@@ -7,6 +7,39 @@ class Processor:
     def __init__(self):
         pass
 
+    def resize(image, width=None, height=None, interpolation=cv2.INTER_AREA):
+        """
+        Resize an image while maintaining its aspect ratio.
+
+        Parameters:
+            image (numpy.ndarray): The input image.
+            width (int, optional): The desired width. If None, height must be specified.
+            height (int, optional): The desired height. If None, width must be specified.
+            interpolation (int, optional): Interpolation method. Default is cv2.INTER_AREA.
+
+        Returns:
+            numpy.ndarray: The resized image.
+        """
+        # Get original dimensions
+        original_height, original_width = image.shape[:2]
+
+        if width is not None and height is None:
+            # Scale based on width
+            scale_factor = width / original_width
+            new_width = width
+            new_height = int(original_height * scale_factor)
+        elif height is not None and width is None:
+            # Scale based on height
+            scale_factor = height / original_height
+            new_height = height
+            new_width = int(original_width * scale_factor)
+        else:
+            raise ValueError(
+                "Specify either width or height, not both or neither.")
+
+        # Resize the image
+        return cv2.resize(image, (new_width, new_height), interpolation=interpolation)
+
     def find_min_distance(points1, points2):
         """
         takes in two array of indices (positions)
@@ -151,7 +184,7 @@ class Processor:
 
     def link_clusters(labeled_array):
         linked = np.array([[1 if item != 0 else 0 for item in row]
-                  for row in labeled_array])
+                           for row in labeled_array])
 
         cluster_ids = np.sort(np.unique(labeled_array))
 
@@ -184,4 +217,3 @@ class Processor:
         image = Processor.link_clusters(image)
         image = Processor.output_image(image)
         return image
-
