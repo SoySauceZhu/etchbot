@@ -21,6 +21,7 @@ https://github.com/FilipAndersson245/cartoon-gan
 
 ### 3. bitmap to svg
 https://pypi.org/project/pypotrace/
+
 https://potrace.sourceforge.net/
 
 ### 4. svg to Gcode
