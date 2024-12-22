@@ -1,12 +1,13 @@
+/svg/
+/gcode/
+/edges/
+/frames/
+/processed/
+/output/
+/__pycache__/
+
 *.mp4
 *.png
-*.png
+*.jpg
 
 !resources/*
-
-edges/
-frames/
-processed/
-resources/
-output/
-__pycache__/

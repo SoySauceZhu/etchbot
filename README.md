@@ -27,6 +27,8 @@ https://potrace.sourceforge.net/
 ### 4. svg to Gcode
 https://github.com/sameer/svg2gcode
 
+https://ncviewer.com
+
 ### 4. alternative: svg to driver config file
 ~~I don't like this~~
 
