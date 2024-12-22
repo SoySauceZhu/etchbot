@@ -4,7 +4,8 @@ from scipy.ndimage import label, binary_dilation
 
 
 class Processor:
-    struct = np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]])
+    eight_struct = np.array([[1, 1, 1], [1, 1, 1], [1, 1, 1]])
+    four_struct = np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]])
 
     def __init__(self):
         pass
@@ -80,7 +81,7 @@ class Processor:
 
         e = 0                # Current error
 
-        for i in range(dx + dy):
+        for _ in range(dx + dy):
             input_array[x0, y0] = replace
             e1 = e + dy
             e2 = e - dx
@@ -95,7 +96,7 @@ class Processor:
 
         return input_array
 
-    def label_cluster(image):
+    def label_cluster_eight(image):
         """
         Label the connected clusters in a given image (ndarray)
         input: ndarray
@@ -108,7 +109,24 @@ class Processor:
         # Convert array either 1 or 0
         binary_image = (image != 0).astype(int)
 
-        labeled_array, _ = label(binary_image, structure=Processor.struct)
+        labeled_array, _ = label(binary_image, structure=Processor.eight_struct)
+
+        return labeled_array
+
+    def label_cluster_four(image):
+        """
+        Label the connected clusters in a given image (ndarray)
+        input: ndarray
+        output: ndarray
+        """
+        # Convert to binary image (array)
+        if len(image.shape) == 3:
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        # Convert array either 1 or 0
+        binary_image = (image != 0).astype(int)
+
+        labeled_array, _ = label(binary_image, structure=Processor.four_struct)
 
         return labeled_array
 
@@ -149,9 +167,8 @@ class Processor:
         while True:
             distance += 1
 
-            # Default dilate structure
             dilate_mask = binary_dilation(
-                dilate_mask, structure=Processor.struct)
+                dilate_mask, structure=Processor.four_struct)
 
             overlap = dilate_mask & other_cluster_mask
             if np.any(overlap):
@@ -187,7 +204,7 @@ class Processor:
 
             linked = Processor.draw_line(linked, start, end)
 
-            labeled_array = Processor.label_cluster(linked)
+            labeled_array = Processor.label_cluster_four(linked)
             cluster_ids = np.sort(np.unique(labeled_array))
 
         return linked
@@ -201,8 +218,10 @@ class Processor:
         return out
 
     def process(image):
-        image = Processor.label_cluster(image)
+        image = Processor.label_cluster_eight(image)
         image = Processor.ignore_cluster(image)
+        image = Processor.output_image(image)
+        image = Processor.label_cluster_four(image)
         image = Processor.link_clusters(image)
         image = Processor.output_image(image)
         return image

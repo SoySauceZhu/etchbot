@@ -20,7 +20,7 @@ def image2svg(indir, outdir, filename):
     processed = Processor.process(edges)
 
     cv2.imwrite(output_path, processed)
-    subprocess.run(["convert", output_path, pnm_path])
+    subprocess.run(["magick", output_path, pnm_path])
     subprocess.run(["potrace", pnm_path, "-s", "-o", svg_path])
 
 
