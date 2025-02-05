@@ -4,8 +4,13 @@ from scipy.ndimage import label, binary_dilation
 
 
 class Processor:
-    eight_struct = np.array([[1, 1, 1], [1, 1, 1], [1, 1, 1]])
-    four_struct = np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]])
+    eight_struct = np.array([[1, 1, 1],
+                            [1, 1, 1], 
+                            [1, 1, 1]])
+
+    four_struct = np.array([[0, 1, 0], 
+                            [1, 1, 1], 
+                            [0, 1, 0]])
 
     def __init__(self):
         pass
