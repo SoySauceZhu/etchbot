@@ -33,6 +33,7 @@ void MotorDriver::sendPulse(unsigned long pulse, unsigned int delay) {
 };
 
 void MotorDriver::toOrigin(){
+    backward(ABS_POS_PULSE, 300);
 };
 
 void MotorDriver::toPosition(float pos, unsigned int feedrate) {
