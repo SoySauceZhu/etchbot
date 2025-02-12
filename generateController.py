@@ -3,6 +3,29 @@ import os
 import subprocess
 from PIL import Image
 from processor import Processor
+from heuristicGcode import Heuristic_gcode
+
+def image2gcode(indir, outdir, filename):
+    os.makedirs(indir, exist_ok=True)
+    os.makedirs(outdir, exist_ok=True)
+
+    input_path = os.path.join(indir, filename)
+    output_path = os.path.join(outdir, "processed_"+filename)
+    pnm_path = os.path.splitext(output_path)[0] + ".pnm"
+    svg_path = os.path.splitext(output_path)[0] + ".svg"
+
+    konan = cv2.imread(input_path)
+    konan = Processor.resize(konan, 480)
+    edges = cv2.Canny(konan, 50, 150)
+
+    processed = Processor.process(edges)
+
+    cv2.imwrite(output_path, processed)
+    # # Use command line to convert processed image to bitmap
+    # subprocess.run(["magick", output_path, pnm_path])
+
+    Heuristic_gcode(output_path, "gcode/heuristic.gcode")   
+
 
 
 def image2svg(indir, outdir, filename):
@@ -24,7 +47,7 @@ def image2svg(indir, outdir, filename):
     # # Use command line to convert processed image to bitmap
     # subprocess.run(["magick", output_path, pnm_path])
 
-    img = Image.open(output_path)
+    img = Image.fromarray(processed)
     img.save(pnm_path, format="PPM")
 
     # Use command line to convert bitmap to svg
@@ -40,5 +63,6 @@ def svg2gcode(indir, outdir, filename):
 if __name__ == "__main__":
     filename = "konan.jpg"
 
-    image2svg("resources", "svg", filename)
-    svg2gcode("svg", "gcode", filename)
+    image2gcode("resources", "gcode", filename) 
+    # image2svg("resources", "svg", filename)
+    # svg2gcode("svg", "gcode", filename)
