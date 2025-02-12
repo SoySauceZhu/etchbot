@@ -6,8 +6,11 @@ def Heuristic_gcode(image, gcode_path):
     # Flip the image upside down
     image = np.flipud(image)
     
+    if len(image.shape) == 3:
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    
     # Get coordinates of non-zero pixels
-    # y_coords, x_coords = np.nonzero(image > 127)
+    # y_coords, x_coords = np.nonzero(image)
     y_coords, x_coords = np.nonzero(image > 127)
     points = np.column_stack((y_coords, x_coords))
     
@@ -52,4 +55,5 @@ def Heuristic_gcode(image, gcode_path):
 
 # Example usage
 if __name__ == "__main__":
-    Heuristic_gcode('svg/processed_konan.jpg', 'gcode/heuristic.gcode')
+    image = cv2.imread('output/processed_konan.jpg', cv2.IMREAD_GRAYSCALE)
+    Heuristic_gcode(image, 'output/heuristic_konan.gcode')
