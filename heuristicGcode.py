@@ -2,12 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-def Heuristic_gcode(image_path, gcode_path):
-    # Load the binary image
-    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    if image is None:
-        raise ValueError("Image not found or unable to read")
-    
+def Heuristic_gcode(image, gcode_path):
     # Flip the image upside down
     image = np.flipud(image)
     
@@ -47,13 +42,14 @@ def Heuristic_gcode(image_path, gcode_path):
             gcode_file.write(f"G1 X{p[1]} Y{p[0]} F1000\n")
     
     # Plot the image
-    plt.imshow(image, cmap='gray')
+    # plt.imshow(image, cmap='gray')
     
-    # Draw the path
-    path = np.array(path)
-    plt.plot(path[:, 1], path[:, 0], 'r-', linewidth=0.8)
+    # # Draw the path
+    # path = np.array(path)
+    # plt.plot(path[:, 1], path[:, 0], 'r-', linewidth=0.8)
     
-    plt.show()
+    # plt.show()
 
 # Example usage
-Heuristic_gcode('svg/processed_konan.jpg', 'gcode/heuristic.gcode')
+if __name__ == "__main__":
+    Heuristic_gcode('svg/processed_konan.jpg', 'gcode/heuristic.gcode')
