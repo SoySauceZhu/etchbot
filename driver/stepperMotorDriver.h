@@ -30,7 +30,7 @@ class MotorDriver {
     short DIR_PIN;
     unsigned long ABS_POS_PULSE;
     unsigned long OFFSET_POS_PULSE;
-    unsigned int STEP_PER_MM = 6;
+    unsigned int STEP_PER_MM = 4;
     bool REVERT_CALIBRATE = 0;
 };
 
