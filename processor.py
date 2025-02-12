@@ -223,6 +223,10 @@ class Processor:
         return out
 
     def process(image):
+        '''
+        Return an image as ndarray, which is a binary image,
+        Processed to connect the clusters, can be drawn within one stroke
+        '''
         image = Processor.label_cluster_eight(image)
         image = Processor.ignore_cluster(image)
         image = Processor.output_image(image)
