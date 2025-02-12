@@ -5,6 +5,9 @@ URL: https://github.com/Every-Flavor-Robotics/etchbot
 Access Date: 22 Dec 2024
 """
 
+"""
+NOT USED IN MINGJIE'S PROJECT
+"""
 
 from abc import ABC, abstractmethod
 from pathlib import Path
