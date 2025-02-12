@@ -1,6 +1,7 @@
 import cv2
 import os
 import subprocess
+from PIL import Image
 from processor import Processor
 
 
@@ -20,7 +21,13 @@ def image2svg(indir, outdir, filename):
     processed = Processor.process(edges)
 
     cv2.imwrite(output_path, processed)
-    subprocess.run(["magick", output_path, pnm_path])
+    # # Use command line to convert processed image to bitmap
+    # subprocess.run(["magick", output_path, pnm_path])
+
+    img = Image.open(output_path)
+    img.save(pnm_path, format="PPM")
+
+    # Use command line to convert bitmap to svg
     subprocess.run(["potrace", pnm_path, "-s", "-o", svg_path])
 
 
