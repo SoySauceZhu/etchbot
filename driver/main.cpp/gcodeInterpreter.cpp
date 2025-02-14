@@ -2,7 +2,17 @@
 
 void GCodeInterpreter::parseCommand(String command)
 {
+
     command.trim();
+
+    if (command.startWith("QPos"))
+    {
+        Serial.print("Current ABS_POS_PULSE X: ");
+        Serial.print(xMotor.ABS_POS_PULSE);
+        Serial.print(", Y: ");
+        Serial.println(yMotor.ABS_POS_PULSE);
+    }
+
     if (command.startsWith("G0") || command.startsWith("G1"))
     { // Linear move
         float x = 0, y = 0;

@@ -35,6 +35,8 @@ void MotorDriver::stepNonBlocking() {
             digitalWrite(STEP_PIN, LOW);
             pulsesRemaining--;
         }
+        // update ABS_POS_PULSE
+        ABS_POS_PULSE += (digitalRead(DIR_PIN) ? 1 : -1);
     } else {
         isMoving = false;
     }
