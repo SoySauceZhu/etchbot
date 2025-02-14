@@ -5,7 +5,7 @@ from PIL import Image
 from processor import Processor
 from heuristicGcode import Heuristic_gcode
 
-def image2gcode(indir, outdir, filename):
+def image2gcode(indir, outdir, filename, resize_factor=0.3, width=480, height=None):
     os.makedirs(indir, exist_ok=True)
     os.makedirs(outdir, exist_ok=True)
 
@@ -16,17 +16,19 @@ def image2gcode(indir, outdir, filename):
     gcode_output_file = os.path.join(outdir, "heuristic_"+filename_without_suffix+".gcode")
 
     input_image = cv2.imread(input_file, cv2.IMREAD_GRAYSCALE)
-    input_image = Processor.resize(input_image, 480)
+    input_image = Processor.resize(input_image, width=width, height=height)
     edges = cv2.Canny(input_image, 50, 150)
 
-    processed_image = Processor.process(edges)
+    processor = Processor() 
+    processed_image = processor.process(edges)
 
     cv2.imwrite(image_output_file, processed_image)
 
-    Heuristic_gcode(processed_image, gcode_output_file)   
+    Heuristic_gcode(processed_image, gcode_output_file, resize_factor=resize_factor)
 
 
 
+# deprecated
 def image2svg(indir, outdir, filename):
     os.makedirs(indir, exist_ok=True)
     os.makedirs(outdir, exist_ok=True)
@@ -53,15 +55,7 @@ def image2svg(indir, outdir, filename):
     subprocess.run(["potrace", pnm_path, "-s", "-o", svg_path])
 
 
-def svg2gcode(indir, outdir, filename):
-    os.makedirs(indir, exist_ok=True)
-    os.makedirs(outdir, exist_ok=True)
-    pass
-
-
 if __name__ == "__main__":
     filename = "konan.jpg"
 
     image2gcode("resources", "output", filename) 
-    # image2svg("resources", "svg", filename)
-    # svg2gcode("svg", "gcode", filename)

@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from scipy.ndimage import label, binary_dilation
+import logging
 
 
 class Processor:
@@ -13,7 +14,9 @@ class Processor:
                             [0, 1, 0]])
 
     def __init__(self):
-        pass
+        # Initialize logging
+        logging.basicConfig(level=logging.INFO)
+        self.logger = logging.getLogger(__name__)
 
     def resize(image, width=None, height=None, interpolation=cv2.INTER_AREA):
         """
@@ -222,15 +225,30 @@ class Processor:
         out[cluster > 0] = [255, 255, 255]
         return out
 
-    def process(image):
+    def process(self, image):
         '''
         Return an image as ndarray, which is a binary image,
         Processed to connect the clusters, can be drawn within one stroke
         '''
+        self.logger.info("Starting process method.")
+        
+        self.logger.info("Labeling clusters with eight connectivity.")
         image = Processor.label_cluster_eight(image)
+        
+        self.logger.info("Ignoring small clusters.")
         image = Processor.ignore_cluster(image)
+        
+        self.logger.info("Converting to output image.")
         image = Processor.output_image(image)
+        
+        self.logger.info("Labeling clusters with four connectivity.")
         image = Processor.label_cluster_four(image)
+        
+        self.logger.info("Linking clusters.")
         image = Processor.link_clusters(image)
+        
+        self.logger.info("Converting to final output image.")
         image = Processor.output_image(image)
+        
+        self.logger.info("Process method completed.")
         return image

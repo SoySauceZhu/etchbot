@@ -12,7 +12,7 @@ public:
   void configure(short en, short step, short dir);
   void forward(unsigned long pulse, unsigned int feedrate);
   void backward(unsigned long pulse, unsigned int feedrate);
-  void toPosition(unsigned long pos, unsigned int feedrate);  // Revised
+  void toPosition(float pos, unsigned int feedrate);  // Revised
   void stepNonBlocking();  // Non-blocking stepping function
   void setEnable(bool en);
   bool isMovingMotor();  // Checks if the motor is still moving
@@ -28,7 +28,7 @@ private:
   short DIR_PIN;
   unsigned long ABS_POS_PULSE;
   unsigned long OFFSET_POS_PULSE;
-  unsigned int STEP_PER_MM = 4;
+  unsigned int STEP_PER_MM = 5;
   bool REVERT_CALIBRATE = 0;
 
   // Variables for non-blocking step execution
