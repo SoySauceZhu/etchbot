@@ -11,7 +11,7 @@ void MotorDriver::configure(short en, short step, short dir) {
     digitalWrite(EN_PIN, LOW);
 }
 
-void MotorDriver::getCurrentPosition() {
+long MotorDriver::getCurrentPosition() {
     return ABS_POS_PULSE;
 }
 

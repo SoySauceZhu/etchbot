@@ -5,12 +5,12 @@ void GCodeInterpreter::parseCommand(String command)
 
     command.trim();
 
-    if (command.startWith("QPos"))
+    if (command.startsWith("QPos"))
     {
         Serial.print("Current ABS_POS_PULSE X: ");
-        Serial.print(xMotor.ABS_POS_PULSE);
+        Serial.print(xMotor.getCurrentPosition());
         Serial.print(", Y: ");
-        Serial.println(yMotor.ABS_POS_PULSE);
+        Serial.println(yMotor.getCurrentPosition());
     }
 
     if (command.startsWith("G0") || command.startsWith("G1"))

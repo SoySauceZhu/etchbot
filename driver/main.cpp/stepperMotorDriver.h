@@ -20,7 +20,7 @@ public:
   void invertDirection();
   void toOrigin();
   void sendPulse(unsigned long pulse, unsigned int delay);
-  void getCurrentPosition();
+  long getCurrentPosition();
 
 
 private:
