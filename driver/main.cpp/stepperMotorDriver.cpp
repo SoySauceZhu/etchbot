@@ -43,8 +43,12 @@ void MotorDriver::stepNonBlocking() {
 void MotorDriver::toPosition(float pos, unsigned int feedrate) {
     unsigned long targetPulse = pos * STEP_PER_MM;
     long dPulse = (long) targetPulse - ABS_POS_PULSE + OFFSET_POS_PULSE;
-    if (dPulse > 0) forward(dPulse, feedrate);
-    else if (dPulse < 0) backward(dPulse, feedrate);        // TODO
+    if (dPulse > 0) {
+        forward(dPulse, feedrate);
+    }
+    else if (dPulse < 0)  {
+        backward(dPulse, feedrate);         // TODO backward(-dPulse, feedrate)
+    }
 };
 
 void MotorDriver::setCoordinate(float pos) {
