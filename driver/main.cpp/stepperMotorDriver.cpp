@@ -11,6 +11,10 @@ void MotorDriver::configure(short en, short step, short dir) {
     digitalWrite(EN_PIN, LOW);
 }
 
+void MotorDriver::getCurrentPosition() {
+    return ABS_POS_PULSE;
+}
+
 void MotorDriver::forward(unsigned long pulse, unsigned int feedrate) {
     digitalWrite(DIR_PIN, HIGH ^ REVERT_CALIBRATE);
     stepDelay = 60000000 / (feedrate * STEP_PER_MM);
