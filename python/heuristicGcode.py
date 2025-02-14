@@ -67,5 +67,6 @@ def Heuristic_gcode(image, gcode_path, resize_factor=1.0):
 
 # Example usage
 if __name__ == "__main__":
-    image = cv2.imread('output/processed_konan.jpg', cv2.IMREAD_GRAYSCALE)
-    Heuristic_gcode(image, 'output/heuristic_konan.gcode')
+    image = cv2.imread('resources/EiffelTower.jpg', cv2.IMREAD_GRAYSCALE)
+    image = cv2.bitwise_not(image)
+    Heuristic_gcode(image, 'output/heuristic_EiffelTower.gcode')
