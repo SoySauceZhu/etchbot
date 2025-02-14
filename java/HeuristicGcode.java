@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 public class HeuristicGcode {
     private static final Logger logger = Logger.getLogger(HeuristicGcode.class.getName());
 
-    public static void generate(BufferedImage image, String gcodePath, double resizeFactor) {
+    public static void generate(BufferedImage image, String gcodePath, double resizeFactoro, int feedRate) {
         try {
             int width = image.getWidth();
             int height = image.getHeight();
@@ -43,7 +43,7 @@ public class HeuristicGcode {
                     String[] parts = currentPixel.split(",");
                     int x = Integer.parseInt(parts[0]);
                     int y = Integer.parseInt(parts[1]);
-                    gcode.append(String.format("G1 X%.2f Y%.2f F1000\n", x * resizeFactor, y * resizeFactor));
+                    gcode.append(String.format("G1 X%.2f Y%.2f F%d\n", x * resizeFactoro, y * resizeFactoro, feedRate));
                     
                     for (int dx = -1; dx <= 1; dx++) {
                         for (int dy = -1; dy <= 1; dy++) {

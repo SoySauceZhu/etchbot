@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 public class GenerateController {
     private static final Logger logger = Logger.getLogger(GenerateController.class.getName());
     
-    public static void imageToGcode(String inputDir, String outputDir, String filename, double resizeFactor, int width, Integer height) {
+    public static void imageToGcode(String inputDir, String outputDir, String filename, int feedRate, double resizeFactor, int width) {
         try {
             Files.createDirectories(Paths.get(inputDir));
             Files.createDirectories(Paths.get(outputDir));
@@ -26,7 +26,7 @@ public class GenerateController {
             
             ImageIO.write(processedImage, "jpg", imageOutputFile);
             
-            HeuristicGcode.generate(processedImage, gcodeOutputFile.getAbsolutePath(), resizeFactor);
+            HeuristicGcode.generate(processedImage, gcodeOutputFile.getAbsolutePath(), resizeFactor, feedRate);
             
             logger.info("G-code generation complete.");
         } catch (IOException e) {
@@ -36,6 +36,6 @@ public class GenerateController {
     
     public static void main(String[] args) {
         String filename = "konan.jpg";
-        imageToGcode("resources", "output", filename, 0.3, 480, null);
+        imageToGcode("resources", "output", filename, 800, 0.3, 480);
     }
 }
