@@ -30,7 +30,7 @@ private:
   unsigned long ABS_POS_PULSE;
   unsigned long OFFSET_POS_PULSE;
   unsigned int STEP_PER_MM = 5;
-  bool REVERT_CALIBRATE = 0;
+  bool REVERT_CALIBRATE = 1;
 
   // Variables for non-blocking step execution
   bool isMoving;
