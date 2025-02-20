@@ -1,6 +1,7 @@
 import cv2
 import os
 import subprocess
+import sys
 from PIL import Image
 from processor import Processor
 from heuristicGcode import Heuristic_gcode
@@ -56,6 +57,10 @@ def image2svg(indir, outdir, filename):
 
 
 if __name__ == "__main__":
-    filename = "konan.jpg"
+    resources = sys.argv[1]
+    output = sys.argv[2]
+    file = sys.argv[3]
 
-    image2gcode("resources", "output", filename) 
+    # print(resources, output, file)
+
+    image2gcode(resources, output, file)
