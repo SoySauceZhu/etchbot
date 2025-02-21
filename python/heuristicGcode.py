@@ -52,7 +52,7 @@ def Heuristic_gcode(image, gcode_path, resize_factor=1.0):
         # Move to start position
         gcode_file.write(f"G0 X{path[0][1] * resize_factor:.2f} Y{path[0][0] * resize_factor:.2f}\n")
         for p in path:
-            gcode_file.write(f"G1 X{p[1] * resize_factor:.2f} Y{p[0] * resize_factor:.2f} F1000\n")
+            gcode_file.write(f"G1 X{p[1] * resize_factor:.2f} Y{p[0] * resize_factor:.2f} F1800\n")
     logging.info(f"G-code written to {gcode_path}")
 
     # Plot the image

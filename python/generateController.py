@@ -1,11 +1,12 @@
 import cv2
 import os
 import subprocess
+import sys
 from PIL import Image
 from processor import Processor
 from heuristicGcode import Heuristic_gcode
 
-def image2gcode(indir, outdir, filename, resize_factor=0.3, width=480, height=None):
+def image2gcode(indir, outdir, filename, resize_factor=0.35, width=480, height=None):
     os.makedirs(indir, exist_ok=True)
     os.makedirs(outdir, exist_ok=True)
 
@@ -56,6 +57,13 @@ def image2svg(indir, outdir, filename):
 
 
 if __name__ == "__main__":
-    filename = "konan.jpg"
+    resources = sys.argv[1]
+    output = sys.argv[2]
+    file = sys.argv[3]
+    if (len(sys.argv) == 5):
+        resize = float(sys.argv[4])
 
-    image2gcode("resources", "output", filename) 
+        image2gcode(resources, output, file, resize_factor=resize)
+    # print(resources, output, file)
+    image2gcode(resources, output, file)
+

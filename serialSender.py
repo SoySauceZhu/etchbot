@@ -1,4 +1,5 @@
 import serial
+import sys
 import time
 
 # Serial port settings (adjust the port and baudrate to match your Arduino)
@@ -23,7 +24,7 @@ def send_gcode(file_path):
                 continue
             print(f"Sending: {gcode}")  
             ser.write((gcode + "\n").encode())  # Send command
-            time.sleep(0.1)  # Small delay
+            time.sleep(0.05)  # Small delay
 
             # Wait for Arduino response (optional)
             while (True):
@@ -36,12 +37,15 @@ def send_gcode(file_path):
                     # print(f"Arduino: {response}")
 
 
+if __name__ == '__main__':
+    file_path = sys.argv[1]
+
 # Path to your GCode file
-GCODE_FILE = "output\heuristic_konan.gcode"
+    # GCODE_FILE = "output\heuristic_konan.gcode"
 
 # Send the GCode file
-send_gcode(GCODE_FILE)
+    send_gcode(file_path)
 
 # Close serial connection
-ser.close()
-print("Done.")
+    ser.close()
+    print("Done.")
