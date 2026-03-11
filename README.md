@@ -1,5 +1,9 @@
 # etchbot
 
+## Demo
+
+[![Demo Video](https://img.youtube.com/vi/834GOHdpZwg/0.jpg)](https://youtu.be/834GOHdpZwg)
+
 ## Software:
 
 ### 1. AI modified picture: Cartoonify
@@ -41,4 +45,3 @@ https://github.com/grbl/grbl
 ~~Mingjie know little about hardware~~
 
 ~~3D printed frame? I guess~~
-
